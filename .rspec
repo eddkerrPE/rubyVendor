@@ -1,0 +1,4 @@
+--color
+--require spec_helper
+rspec --format d
+--order rand
