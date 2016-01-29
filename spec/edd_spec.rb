@@ -38,7 +38,13 @@ describe "Machine" do
 
   end
 
-
+  it "must be able to return the smallest amount of notes for a given currency set and amount due" do
+    machine = Machine.new(emptyStock)
+    currencySet = [quarter, dime, nickel, penny]
+    currencySet2 = [quarter, dime, nickel, penny]
+    expect(machine.returnChange(currencySet, 0.41)).to eq([quarter, dime, nickel, penny])
+    expect(machine.returnChange(currencySet2, 0.20)).to eq([dime, dime])
+  end
 
   it "count and inventory the amount of each item it has" do
     itemsInStock = [chips, chips, chips, snickers]

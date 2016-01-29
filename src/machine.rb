@@ -43,6 +43,17 @@ class Machine
     return currencyChoices[0]
   end
 
+  def returnChange(currencySet, changeDue)
+    change = []
+    while changeDue > 0
+      nextCoin = findHighestNote(currencySet, changeDue)
+      changeDue -= nextCoin.value
+      change.push(nextCoin)
+    end
+    return change
+  end
+
+
 end
 
 
