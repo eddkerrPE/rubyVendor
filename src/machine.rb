@@ -1,58 +1,54 @@
 class Machine
   attr_reader :itemsInStock
 
-  def initialize(itemsInStock)
+  def initialize(itemsInStock, machineCurrency)
     @itemsInStock = itemsInStock
+    @machineCurrency = machineCurrency
   end
 
   def vend(itemRequested)
-    for item in @itemsInStock
-      if item == itemRequested
-        @itemsInStock.delete(item)
-        return itemRequested
-        return
-      end
+    if itemRequested == nil
+      return 'Out of Stock'
     end
-    return item
+    return @itemsInStock.delete(itemRequested)
   end
 
   def countChange(payment)
     changeDue = 0
-    for currency in payment
-      changeDue += currency.value
-    end
+    payment.each {|currency| changeDue += currency.value}
     return changeDue
   end
 
   def checkInventory(item)
-    for stockedItem in @itemsInStock do
-      if stockedItem == item
-        return true
-      end
-      return false
-    end
+    return @itemsInStock.include? item
   end
 
   def findHighestNote(currencySet, changeDue)
-    currencyChoices = currencySet.sort! { |a,b| b.value <=> a.value}
-    for currency in currencyChoices
-      if currency.value > changeDue
-        currencyChoices.delete(currency)
-      end
-    end
-    return currencyChoices[0]
+    filteredCurrency = currencySet.keep_if {|currency| currency.value <= changeDue}
+    sortedAndFilteredCurrency = filteredCurrency.sort { |a,b| b.value <=> a.value}
+    return sortedAndFilteredCurrency.first
   end
 
   def returnChange(currencySet, changeDue)
     change = []
     while changeDue > 0
       nextCoin = findHighestNote(currencySet, changeDue)
-      changeDue -= nextCoin.value
       change.push(nextCoin)
+      changeDue -= nextCoin.value
     end
     return change
   end
 
+  def transaction(itemRequested, payment)
+    if !checkInventory(itemRequested)
+      return "Out Of Stock!"
+    end
+    changeDue = countChange(payment) - itemRequested.cost
+    change = returnChange(@machineCurrency, changeDue)
+    item = vend(itemRequested)
+    itemAndChange = [item, change]
+    return itemAndChange
+  end
 
 end
 
