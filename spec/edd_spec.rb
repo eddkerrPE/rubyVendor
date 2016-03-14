@@ -16,7 +16,16 @@ describe "Machine" do
   nickel = Currency.new('Nickel', 5)
   penny = Currency.new('Penny', 1)
 
+  ## some japanese currency
+  oneYenCoin = Currency.new('One Yen Coin', 1)
+  fiveYenCoin = Currency.new('Five Yen Coin', 5)
+  tenYenCoin = Currency.new('Ten Yen Coin', 10)
+  hundredYenCoin = Currency.new('One Hundred Yen Coin', 100)
+  fiveHundredYenCoin = Currency.new('Five Hundred Yen Coin', 500)
+  thousandYenNote = Currency.new('Thousand Yen Coin', 1000)
+
   americanCoins = [quarter, dime, nickel, penny]
+  japaneseCurrency = [oneYenCoin, fiveYenCoin, tenYenCoin, hundredYenCoin, fiveHundredYenCoin, thousandYenNote]
 
   it "must vend a snack" do
     machine = Machine.new([chips], americanCoins)
@@ -47,6 +56,7 @@ describe "Machine" do
       machine = Machine.new(emptyStock, newCurrencySet)
       expect(machine.findHighestNote(newCurrencySet, 24)).to eq(dime)
     end
+
   end
 
 
@@ -56,6 +66,13 @@ describe "Machine" do
     # expect(machine.returnChange(currencySet, 41)).to eq([quarter, dime, nickel, penny])
     # expect(machine.returnChange(currencySet, 20)).to eq([dime, dime])
     expect(machine.returnChange(currencySet, 26)).to eq([quarter, penny])
+  end
+
+  it "must be able to accept Yen" do
+    currencySet = japaneseCurrency
+    payment = [tenYenCoin, tenYenCoin, tenYenCoin, tenYenCoin, tenYenCoin]
+    machine = Machine.new(emptyStock, currencySet)
+    expect(machine.countChange(payment)).to eq(50)
   end
 
   it "count and inventory the amount of each item it has" do
@@ -81,6 +98,17 @@ describe "Machine" do
     results = machine.transaction(reeses, payment)
     expect(results[1]).to eq([dime, dime, penny, penny, penny, penny])
     expect(results[0]).to eq(reeses)
+  end
+
+  it "must be able to perform a complete transaction in yen" do
+    liveCrab = Snack.new('A Live Crab', 465)
+    payment = [hundredYenCoin, hundredYenCoin, hundredYenCoin, hundredYenCoin, hundredYenCoin]
+    panties = Snack.new('Panties', 10000)
+    japaneseInventory = [liveCrab, panties]
+    machine = Machine.new(japaneseInventory, japaneseCurrency)
+    results = machine.transaction(liveCrab, payment)
+    expect(results[1]).to eq([tenYenCoin,tenYenCoin,tenYenCoin,fiveYenCoin])
+    expect(results[0]).to eq(liveCrab)
   end
 
 end
